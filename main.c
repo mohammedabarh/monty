@@ -1,36 +1,46 @@
 #include "monty.h"
 
-int queue_mode = 0;
+stack_t *head = NULL;
 
-instruction_t opcodes[] = {
-    {"push", push},
-    {"pall", pall},
-    {"pint", pint},
-    {"pop", pop},
-    {"swap", swap},
-    {"add", add},
-    {"nop", nop},
-    {"sub", sub},
-    {"div", div_op},
-    {"mul", mul},
-    {"mod", mod},
-    {"pchar", pchar},
-    {"pstr", pstr},
-    {"rotl", rotl},
-    {"rotr", rotr},
-    {"stack", stack_mode},
-    {"queue", queue_mode_op},
-    {NULL, NULL}
-};
+void execute_opcode(char *opcode, stack_t **stack, unsigned int line_number)
+{
+    instruction_t instructions[] = {
+        {"push", push},
+        {"pall", pall},
+        {"pint", pint},
+        {"pop", pop},
+        {"swap", swap},
+        {"add", add},
+        {"nop", nop},
+        {"sub", sub},
+        {"div", div},
+        {"mul", mul},
+        {"mod", mod},
+        {"pchar", pchar},
+        {"pstr", pstr},
+        {"rotl", rotl},
+        {"rotr", rotr},
+        {NULL, NULL}
+    };
+
+    for (int i = 0; instructions[i].opcode != NULL; i++)
+    {
+        if (strcmp(opcode, instructions[i].opcode) == 0)
+        {
+            instructions[i].f(&head, line_number);
+            return;
+        }
+    }
+    fprintf(stderr, "L%d: unknown instruction %s\n", line_number, opcode);
+    exit(EXIT_FAILURE);
+}
 
 int main(int argc, char *argv[])
 {
     FILE *file;
-    char *line = NULL;
+    char *line = NULL, *opcode;
     size_t len = 0;
     unsigned int line_number = 0;
-    stack_t *stack = NULL;
-    char *opcode, *arg;
 
     if (argc != 2)
     {
@@ -48,71 +58,14 @@ int main(int argc, char *argv[])
     while (getline(&line, &len, file) != -1)
     {
         line_number++;
-        opcode = strtok(line, " \t\n");
-        if (opcode == NULL || opcode[0] == '#')
+        opcode = strtok(line, " \n");
+        if (opcode == NULL || line[0] == '#') 
             continue;
-
-        arg = strtok(NULL, " \t\n");
-
-        for (int i = 0; opcodes[i].opcode; i++)
-        {
-            if (strcmp(opcode, opcodes[i].opcode) == 0)
-            {
-                if (strcmp(opcode, "push") == 0)
-                {
-                    if (arg == NULL || !is_number(arg))
-                    {
-                        fprintf(stderr, "L%d: usage: push integer\n", line_number);
-                        free_stack(stack);
-                        fclose(file);
-                        free(line);
-                        exit(EXIT_FAILURE);
-                    }
-                    push(&stack, atoi(arg));
-                }
-                else
-                {
-                    opcodes[i].f(&stack, line_number);
-                }
-                break;
-            }
-        }
-        if (opcodes[i].opcode == NULL)
-        {
-            fprintf(stderr, "L%d: unknown instruction %s\n", line_number, opcode);
-            free_stack(stack);
-            fclose(file);
-            free(line);
-            exit(EXIT_FAILURE);
-        }
+        execute_opcode(opcode, &head, line_number);
     }
 
-    free_stack(stack);
-    fclose(file);
     free(line);
-    return EXIT_SUCCESS;
-}
-
-int is_number(char *str)
-{
-    if (*str == '-')
-        str++;
-    while (*str)
-    {
-        if (!isdigit(*str))
-            return 0;
-        str++;
-    }
-    return 1;
-}
-
-void free_stack(stack_t *stack)
-{
-    stack_t *temp;
-    while (stack)
-    {
-        temp = stack;
-        stack = stack->next;
-        free(temp);
-    }
+    fclose(file);
+    free_stack(&head);
+    return (0);
 }
