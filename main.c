@@ -13,7 +13,7 @@ void execute_opcode(char *opcode, stack_t **stack, unsigned int line_number)
         {"add", add},
         {"nop", nop},
         {"sub", sub},
-        {"div", div},
+        {"div", div_op},
         {"mul", mul},
         {"mod", mod},
         {"pchar", pchar},
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     {
         line_number++;
         opcode = strtok(line, " \n");
-        if (opcode == NULL || line[0] == '#') 
+        if (opcode == NULL || line[0] == '#') // handle comments
             continue;
         execute_opcode(opcode, &head, line_number);
     }

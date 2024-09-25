@@ -1,7 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-
-#define TAPE_SIZE 30000
+#include "monty.h"
 
 void brainfuck_interpreter(char *filename)
 {
@@ -12,7 +9,7 @@ void brainfuck_interpreter(char *filename)
         exit(EXIT_FAILURE);
     }
 
-    char tape[TAPE_SIZE] = {0};
+    char tape[30000] = {0};
     char *ptr = tape;
     char command;
     while ((command = fgetc(file)) != EOF)
@@ -25,10 +22,8 @@ void brainfuck_interpreter(char *filename)
             case '-': (*ptr)--; break;
             case '.': putchar(*ptr); break;
             case ',': *ptr = getchar(); break;
-            case '[': // Implement loops as needed
-                break;
-            case ']': // Implement loops as needed
-                break;
+            case '[': /* Handle loops here */ break;
+            case ']': /* Handle loops here */ break;
         }
     }
     fclose(file);
