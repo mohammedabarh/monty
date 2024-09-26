@@ -1,78 +1,85 @@
 #include "monty.h"
 
 /**
- * swap_top_two - Swaps the top two elements of the stack
- * @stack: Double pointer to the top of the stack
- * @line_number: Line number in the file
+ * do_nothing - A no-operation function.
+ * @stack: Pointer to the stack.
+ * @line_number: The line number of the opcode.
  */
-void swap_top_two(stack_element_t **stack, unsigned int line_number)
+void do_nothing(stack_t **stack, unsigned int line_number)
 {
-    int temp;
-
-    if (!*stack || !(*stack)->next)
-    {
-        fprintf(stderr, "L%d: can't swap, stack too short\n", line_number);
-        exit(EXIT_FAILURE);
-    }
-
-    temp = (*stack)->value;
-    (*stack)->value = (*stack)->next->value;
-    (*stack)->next->value = temp;
+    (void)stack;
+    (void)line_number;
 }
 
 /**
- * add_top_two - Adds the top two elements of the stack
- * @stack: Double pointer to the top of the stack
- * @line_number: Line number in the file
+ * swap_top_nodes - Swaps the top two nodes of the stack.
+ * @stack: Pointer to the top node of the stack.
+ * @line_number: The line number of the opcode.
  */
-void add_top_two(stack_element_t **stack, unsigned int line_number)
+void swap_top_nodes(stack_t **stack, unsigned int line_number)
 {
-    if (!*stack || !(*stack)->next)
-    {
-        fprintf(stderr, "L%d: can't add, stack too short\n", line_number);
-        exit(EXIT_FAILURE);
-    }
+    stack_t *temp;
 
-    (*stack)->next->value += (*stack)->value;
-    pop_element(stack, line_number);
+    if (!stack || !*stack || !(*stack)->next)
+        handle_specific_errors(8, line_number, "swap");
+    
+    temp = (*stack)->next;
+    (*stack)->next = temp->next;
+    if (temp->next)
+        temp->next->prev = *stack;
+    temp->next = *stack;
+    (*stack)->prev = temp;
+    temp->prev = NULL;
+    *stack = temp;
 }
 
 /**
- * subtract_top_two - Subtracts the top element from the second top element
- * @stack: Double pointer to the top of the stack
- * @line_number: Line number in the file
+ * sum_nodes - Adds the top two elements of the stack.
+ * @stack: Pointer to the top node of the stack.
+ * @line_number: The line number of the opcode.
  */
-void subtract_top_two(stack_element_t **stack, unsigned int line_number)
+void sum_nodes(stack_t **stack, unsigned int line_number)
 {
-    if (!*stack || !(*stack)->next)
-    {
-        fprintf(stderr, "L%d: can't sub, stack too short\n", line_number);
-        exit(EXIT_FAILURE);
-    }
+    if (!stack || !*stack || !(*stack)->next)
+        handle_specific_errors(8, line_number, "add");
 
-    (*stack)->next->value -= (*stack)->value;
-    pop_element(stack, line_number);
+    (*stack) = (*stack)->next;
+    (*stack)->n += (*stack)->prev->n;
+    free((*stack)->prev);
+    (*stack)->prev = NULL;
 }
 
 /**
- * divide_top_two - Divides the second top element by the top element
- * @stack: Double pointer to the top of the stack
- * @line_number: Line number in the file
+ * subtract_nodes - Subtracts the top two elements of the stack.
+ * @stack: Pointer to the top node of the stack.
+ * @line_number: The line number of the opcode.
  */
-void divide_top_two(stack_element_t **stack, unsigned int line_number)
+void subtract_nodes(stack_t **stack, unsigned int line_number)
 {
-    if (!*stack || !(*stack)->next)
-    {
-        fprintf(stderr, "L%d: can't div, stack too short\n", line_number);
-        exit(EXIT_FAILURE);
-    }
+    if (!stack || !*stack || !(*stack)->next)
+        handle_specific_errors(8, line_number, "sub");
 
-    if ((*stack)->value == 0)
-    {
-        fprintf(stderr, "L%d: division by zero\n", line_number);
-        exit(EXIT_FAILURE);
-    }
+    (*stack) = (*stack)->next;
+    (*stack)->n -= (*stack)->prev->n;
+    free((*stack)->prev);
+    (*stack)->prev = NULL;
+}
 
-    (*stack)->next->value /= (*stack)->value;
-    pop_element(stack, line_number);
+/**
+ * divide_nodes - Divides the top two elements of the stack.
+ * @stack: Pointer to the top node of the stack.
+ * @line_number: The line number of the opcode.
+ */
+void divide_nodes(stack_t **stack, unsigned int line_number)
+{
+    if (!stack || !*stack || !(*stack)->next)
+        handle_specific_errors(8, line_number, "div");
+
+    if ((*stack)->n == 0)
+        handle_specific_errors(9, line_number);
+    
+    (*stack) = (*stack)->next;
+    (*stack)->n /= (*stack)->prev->n;
+    free((*stack)->prev);
+    (*stack)->prev = NULL;
 }

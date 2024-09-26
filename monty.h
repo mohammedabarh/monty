@@ -4,63 +4,66 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include <ctype.h>
 
-/**
- * struct stack_element_s - doubly linked list representation of a stack (or queue)
- * @value: integer
- * @prev: points to the previous element of the stack (or queue)
- * @next: points to the next element of the stack (or queue)
- *
- * Description: doubly linked list node structure
- * for stack, queues, LIFO, FIFO
- */
-typedef struct stack_element_s
+/* Data structure for stack nodes */
+typedef struct stack_s
 {
-    int value;
-    struct stack_element_s *prev;
-    struct stack_element_s *next;
-} stack_element_t;
+    int n;
+    struct stack_s *prev;
+    struct stack_s *next;
+} stack_t;
 
-/**
- * struct instruction_s - opcode and its function
- * @opcode: the opcode
- * @f: function to handle the opcode
- *
- * Description: opcode and its function
- * for stack, queues, LIFO, FIFO
- */
+/* Function pointer type for opcode functions */
+typedef void (*op_func)(stack_t **, unsigned int);
+
+/* Structure to map opcodes to functions */
 typedef struct instruction_s
 {
     char *opcode;
-    void (*f)(stack_element_t **stack, unsigned int line_number);
+    op_func f;
 } instruction_t;
 
-/* Function prototypes */
-void push_element(stack_element_t **stack, unsigned int line_number);
-void print_all(stack_element_t **stack, unsigned int line_number);
-void print_top_element(stack_element_t **stack, unsigned int line_number);
-void pop_element(stack_element_t **stack, unsigned int line_number);
-void swap_top_two(stack_element_t **stack, unsigned int line_number);
-void add_top_two(stack_element_t **stack, unsigned int line_number);
-void subtract_top_two(stack_element_t **stack, unsigned int line_number);
-void divide_top_two(stack_element_t **stack, unsigned int line_number);
-void multiply_top_two(stack_element_t **stack, unsigned int line_number);
-void modulo_top_two(stack_element_t **stack, unsigned int line_number);
-void rotate_left(stack_element_t **stack, unsigned int line_number);
-void rotate_right(stack_element_t **stack, unsigned int line_number);
-void print_char_top(stack_element_t **stack, unsigned int line_number);
-void print_string(stack_element_t **stack, unsigned int line_number);
+/* Global variable for the top of the stack */
+extern stack_t *head;  // Declaration of the external head variable
 
-void handle_error(int error_code, unsigned int line_number, char *op);
-void file_error(char *filename);
-void usage_error(void);
+/* Error handling functions */
+void log_error(int code, ...);
+void handle_specific_errors(int code, ...);
+void handle_string_errors(int code, ...);
 
-void process_file(char *filename);
-char **tokenize_line(char *line);
-void execute_instruction(char *line, stack_element_t **stack, unsigned int line_number);
-void free_stack(stack_element_t *stack);
+/* File handling functions */
+void load_file(char *filename);
+void parse_file(FILE *file);
+int tokenize_and_execute(char *buffer, int line_number);
+void locate_and_execute(char *opcode, char *argument, int line_number);
+void execute_command(op_func func, char *opcode, char *argument, int line_number);
 
-extern stack_element_t *top;
+/* Stack manipulation functions */
+stack_t *create_node(int value);
+void clear_stack(void);
+void push_to_stack(stack_t **new_node, unsigned int line_number);
+void display_stack(stack_t **stack, unsigned int line_number);
+void remove_top(stack_t **stack, unsigned int line_number);
+void show_top(stack_t **stack, unsigned int line_number);
+void enqueue(stack_t **new_node, unsigned int line_number);
+
+/* Arithmetic functions */
+void swap_top_nodes(stack_t **stack, unsigned int line_number);
+void sum_nodes(stack_t **stack, unsigned int line_number);
+void subtract_nodes(stack_t **stack, unsigned int line_number);
+void divide_nodes(stack_t **stack, unsigned int line_number);
+void multiply_nodes(stack_t **stack, unsigned int line_number);
+void modulate_nodes(stack_t **stack, unsigned int line_number);
+
+/* String manipulation functions */
+void display_char(stack_t **stack, unsigned int line_number);
+void display_string(stack_t **stack, unsigned int line_number);
+void rotate_left(stack_t **stack, unsigned int line_number);
+void rotate_right(stack_t **stack, unsigned int line_number);
+
+/* Miscellaneous functions */
+void do_nothing(stack_t **stack, unsigned int line_number);
 
 #endif /* MONTY_H */

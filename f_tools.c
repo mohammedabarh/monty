@@ -1,122 +1,134 @@
 #include "monty.h"
 
 /**
- * process_file - Processes the Monty byte code file
- * @filename: Name of the file to process
+ * load_file - Opens a specified file for reading.
+ * @filename: The name of the file to open.
  */
-void process_file(char *filename)
+void load_file(char *filename)
 {
-    FILE *file;
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    unsigned int line_number = 0;
-    stack_element_t *stack = NULL;
+    FILE *file = fopen(filename, "r");
 
-    file = fopen(filename, "r");
-    if (file == NULL)
-        file_error(filename);
+    if (!filename || !file)
+        log_error(2, filename);
 
-    while ((read = getline(&line, &len, file)) != -1)
-    {
-        line_number++;
-        execute_instruction(line, &stack, line_number);
-    }
-
-    free(line);
+    parse_file(file);
     fclose(file);
-    free_stack(stack);
 }
 
 /**
- * tokenize_line - Tokenizes a line into words
- * @line: The line to tokenize
- *
- * Return: An array of strings (words)
+ * parse_file - Reads and processes the contents of a file.
+ * @file: Pointer to the file descriptor.
  */
-char **tokenize_line(char *line)
+void parse_file(FILE *file)
 {
-    char **tokens = NULL;
-    char *token;
-    int i = 0;
+    int line_number;
+    char *buffer = NULL;
+    size_t length = 0;
 
-    tokens = malloc(sizeof(char *) * 3);
-    if (!tokens)
-    {
-        fprintf(stderr, "Error: malloc failed\n");
-        exit(EXIT_FAILURE);
-    }
-
-    token = strtok(line, " \n\t");
-    while (token && i < 2)
-    {
-        tokens[i] = token;
-        token = strtok(NULL, " \n\t");
-        i++;
-    }
-    tokens[i] = NULL;
-
-    return tokens;
+    for (line_number = 1; getline(&buffer, &length, file) != -1; line_number++)
+        tokenize_and_execute(buffer, line_number);
+    
+    free(buffer);
 }
 
 /**
- * execute_instruction - Executes a single instruction
- * @line: The line containing the instruction
- * @stack: Double pointer to the top of the stack
- * @line_number: Line number in the file
+ * tokenize_and_execute - Breaks down each line into tokens and executes commands.
+ * @buffer: The line read from the file.
+ * @line_number: The current line number.
  */
-void execute_instruction(char *line, stack_element_t **stack, unsigned int line_number)
+int tokenize_and_execute(char *buffer, int line_number)
 {
-    char **tokens;
-    int i;
-    instruction_t instructions[] = {
-        {"push", push_element},
-        {"pall", print_all},
-        {"pint", print_top_element},
-        {"pop", pop_element},
-        {"swap", swap_top_two},
-        {"add", add_top_two},
-        {"nop", NULL},
+    char *opcode, *argument;
+    const char *delimiter = "\n ";
+
+    if (!buffer)
+        log_error(4);
+
+    opcode = strtok(buffer, delimiter);
+    argument = strtok(NULL, delimiter);
+
+    if (strcmp(opcode, "stack") == 0)
+        return 0;
+    if (strcmp(opcode, "queue") == 0)
+        return 1;
+
+    locate_and_execute(opcode, argument, line_number);
+    return 0;
+}
+
+/**
+ * locate_and_execute - Finds the appropriate function for a given opcode.
+ * @opcode: The operation code.
+ * @argument: The argument for the opcode.
+ * @line_number: The line number for error reporting.
+ */
+void locate_and_execute(char *opcode, char *argument, int line_number)
+{
+    instruction_t commands[] = {
+        {"push", push_to_stack},
+        {"pall", display_stack},
+        {"pint", show_top},
+        {"pop", remove_top},
+        {"nop", do_nothing},
+        {"swap", swap_top_nodes},
+        {"add", sum_nodes},
+        {"sub", subtract_nodes},
+        {"div", divide_nodes},
+        {"mul", multiply_nodes},
+        {"mod", modulate_nodes},
+        {"pchar", display_char},
+        {"pstr", display_string},
+        {"rotl", rotate_left},
+        {"rotr", rotate_right},
         {NULL, NULL}
     };
 
-    tokens = tokenize_line(line);
-    if (tokens[0] == NULL || tokens[0][0] == '#')
-    {
-        free(tokens);
+    if (opcode[0] == '#')
         return;
-    }
 
-    for (i = 0; instructions[i].opcode; i++)
+    for (int i = 0; commands[i].opcode != NULL; i++)
     {
-        if (strcmp(tokens[0], instructions[i].opcode) == 0)
+        if (strcmp(opcode, commands[i].opcode) == 0)
         {
-            if (strcmp(tokens[0], "push") == 0)
-                push_element(stack, line_number);
-            else if (instructions[i].f)
-                instructions[i].f(stack, line_number);
-            free(tokens);
+            execute_command(commands[i].f, opcode, argument, line_number);
             return;
         }
     }
-
-    fprintf(stderr, "L%d: unknown instruction %s\n", line_number, tokens[0]);
-    free(tokens);
-    exit(EXIT_FAILURE);
+    log_error(3, line_number, opcode);
 }
 
 /**
- * free_stack - Frees a stack
- * @stack: Pointer to the top of the stack
+ * execute_command - Executes the designated function based on opcode.
+ * @func: Pointer to the function to be executed.
+ * @opcode: The operation code string.
+ * @argument: The argument string.
+ * @line_number: The line number of the command.
  */
-void free_stack(stack_element_t *stack)
+void execute_command(op_func func, char *opcode, char *argument, int line_number)
 {
-    stack_element_t *temp;
+    stack_t *new_node;
+    int multiplier = 1;
 
-    while (stack)
+    if (strcmp(opcode, "push") == 0)
     {
-        temp = stack;
-        stack = stack->next;
-        free(temp);
+        if (argument && argument[0] == '-')
+        {
+            argument++;
+            multiplier = -1;
+        }
+        if (!argument)
+            log_error(5, line_number);
+
+        for (int i = 0; argument[i] != '\0'; i++)
+        {
+            if (!isdigit(argument[i]))
+                log_error(5, line_number);
+        }
+        new_node = create_node(atoi(argument) * multiplier);
+        func(multiplier == 1 ? &new_node : &head, line_number);
+    }
+    else
+    {
+        func(&head, line_number);
     }
 }

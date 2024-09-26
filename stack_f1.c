@@ -1,89 +1,73 @@
 #include "monty.h"
 
 /**
- * push_element - Adds an element to the top of the stack
- * @stack: Double pointer to the top of the stack
- * @line_number: Line number in the file
+ * push_to_stack - Adds a new node to the top of the stack.
+ * @new_node: Pointer to the new node.
+ * @line_number: The line number of the opcode.
  */
-void push_element(stack_element_t **stack, unsigned int line_number)
+void push_to_stack(stack_t **new_node, __attribute__((unused)) unsigned int line_number)
 {
-    stack_element_t *new_element;
-    char *arg = strtok(NULL, " \n\t");
-    int value;
+    stack_t *temp;
 
-    if (!arg || !isdigit(*arg))
-    {
-        fprintf(stderr, "L%d: usage: push integer\n", line_number);
+    if (!new_node || !*new_node)
         exit(EXIT_FAILURE);
-    }
-
-    value = atoi(arg);
-    new_element = malloc(sizeof(stack_element_t));
-    if (!new_element)
+    if (!head)
     {
-        fprintf(stderr, "Error: malloc failed\n");
-        exit(EXIT_FAILURE);
+        head = *new_node;
+        return;
     }
-
-    new_element->value = value;
-    new_element->prev = NULL;
-    new_element->next = *stack;
-
-    if (*stack)
-        (*stack)->prev = new_element;
-    *stack = new_element;
+    temp = head;
+    head = *new_node;
+    head->next = temp;
+    temp->prev = head;
 }
 
 /**
- * print_all - Prints all elements in the stack
- * @stack: Double pointer to the top of the stack
- * @line_number: Line number in the file (unused)
+ * display_stack - Outputs all elements in the stack.
+ * @stack: Pointer to the top of the stack.
+ * @line_number: The line number of the opcode.
  */
-void print_all(stack_element_t **stack, unsigned int line_number)
+void display_stack(stack_t **stack, unsigned int line_number)
 {
-    stack_element_t *current = *stack;
+    stack_t *temp = *stack;
+
     (void)line_number;
-
-    while (current)
+    if (!stack)
+        exit(EXIT_FAILURE);
+    while (temp)
     {
-        printf("%d\n", current->value);
-        current = current->next;
+        printf("%d\n", temp->n);
+        temp = temp->next;
     }
 }
 
 /**
- * pop_element - Removes the top element from the stack
- * @stack: Double pointer to the top of the stack
- * @line_number: Line number in the file
+ * remove_top - Removes the top element from the stack.
+ * @stack: Pointer to the top of the stack.
+ * @line_number: The line number of the opcode.
  */
-void pop_element(stack_element_t **stack, unsigned int line_number)
+void remove_top(stack_t **stack, unsigned int line_number)
 {
-    stack_element_t *temp;
+    stack_t *temp;
 
-    if (!*stack)
-    {
-        fprintf(stderr, "L%d: can't pop an empty stack\n", line_number);
-        exit(EXIT_FAILURE);
-    }
+    if (!stack || !*stack)
+        handle_specific_errors(7, line_number);
 
     temp = *stack;
-    *stack = (*stack)->next;
+    *stack = temp->next;
     if (*stack)
         (*stack)->prev = NULL;
     free(temp);
 }
 
 /**
- * print_top_element - Prints the value at the top of the stack
- * @stack: Double pointer to the top of the stack
- * @line_number: Line number in the file
+ * show_top - Displays the top node of the stack.
+ * @stack: Pointer to the stack's top node.
+ * @line_number: The line number of the opcode.
  */
-void print_top_element(stack_element_t **stack, unsigned int line_number)
+void show_top(stack_t **stack, unsigned int line_number)
 {
-    if (!*stack)
-    {
-        fprintf(stderr, "L%d: can't pint, stack empty\n", line_number);
-        exit(EXIT_FAILURE);
-    }
-    printf("%d\n", (*stack)->value);
+    if (!stack || !*stack)
+        handle_specific_errors(6, line_number);
+    printf("%d\n", (*stack)->n);
 }
