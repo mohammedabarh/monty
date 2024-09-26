@@ -1,11 +1,11 @@
 #include "monty.h"
 
-stack_t *head = NULL;  // Definition of the head variable
+stack_t *head = NULL;
 
 /**
- * main - Entry point of the Monty interpreter.
- * @argc: The count of command line arguments.
- * @argv: The command line arguments.
+ * main - Entry point for the Monty interpreter.
+ * @argc: Argument count.
+ * @argv: Argument vector.
  * Return: Always 0 on success.
  */
 int main(int argc, char *argv[])
@@ -15,65 +15,69 @@ int main(int argc, char *argv[])
         fprintf(stderr, "USAGE: monty file\n");
         exit(EXIT_FAILURE);
     }
-    
-    load_file(argv[1]);  // Load and process the file
-    clear_stack();        // Clear the stack at the end
-    return 0;
+    open_script(argv[1]);
+    free_stack();
+    return (0);
 }
 
 /**
- * create_node - Allocates memory for a new stack node.
- * @value: The integer to store in the node.
- * Return: A pointer to the newly created node or NULL on failure.
+ * create_new_node - Allocates memory for a new node.
+ * @n: Value to be stored in the node.
+ * Return: Pointer to the new node or NULL on failure.
  */
-stack_t *create_node(int value)
+stack_t *create_new_node(int n)
 {
     stack_t *node = malloc(sizeof(stack_t));
-    if (!node)
-        log_error(4);  // Handle memory allocation error
 
+    if (node == NULL)
+        print_error(4);
+    node->n = n;
     node->next = NULL;
     node->prev = NULL;
-    node->n = value;
-    return node;
+    return (node);
 }
 
 /**
- * clear_stack - Frees all nodes in the stack.
+ * free_stack - Frees the entire stack.
  */
-void clear_stack(void)
+void free_stack(void)
 {
-    stack_t *temp;
+    stack_t *tmp;
 
-    while (head)
+    while (head != NULL)
     {
-        temp = head;
+        tmp = head;
         head = head->next;
-        free(temp);
+        free(tmp);
     }
 }
 
 /**
- * enqueue - Adds a new node to the end of the stack (queue mode).
+ * append_to_queue - Appends a node to the queue.
  * @new_node: Pointer to the new node.
- * @line_number: The line number of the opcode.
+ * @ln: Line number of the operation (optional for logging).
  */
-void enqueue(stack_t **new_node, unsigned int line_number)
+void append_to_queue(stack_t **new_node, unsigned int ln)
 {
-    (void)line_number;  // Suppress unused parameter warning
-    stack_t *temp;
+    stack_t *tmp;
 
-    if (!new_node || !*new_node)
+    // Use the parameter for logging or error handling
+    if (new_node == NULL || *new_node == NULL)
+    {
+        fprintf(stderr, "Error at line %u: new_node is NULL\n", ln);
         exit(EXIT_FAILURE);
-    if (!head)
+    }
+
+    if (head == NULL)
     {
         head = *new_node;
         return;
     }
-    temp = head;
-    while (temp->next)
-        temp = temp->next;
 
-    temp->next = *new_node;
-    (*new_node)->prev = temp;
+    tmp = head;
+    while (tmp->next != NULL)
+        tmp = tmp->next;
+
+    tmp->next = *new_node;
+    (*new_node)->prev = tmp;
 }
