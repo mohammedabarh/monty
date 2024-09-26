@@ -1,76 +1,82 @@
 #include "monty.h"
 
-
-/**
- * add_to_stack - Adds a node to the stack.
- * @new_node: Pointer to the new node.
- * @ln: Interger representing the line number of of the opcode.
- */
-void add_to_stack(stack_t **new_node, __attribute__((unused))unsigned int ln)
+void push(stack_t **stack, unsigned int line_number, char *arg)
 {
-	stack_t *tmp;
+    stack_t *new_node;
+    int value;
 
-	if (new_node == NULL || *new_node == NULL)
-		exit(EXIT_FAILURE);
-	if (head == NULL)
-	{
-		head = *new_node;
-		return;
-	}
-	tmp = head;
-	head = *new_node;
-	head->next = tmp;
-	tmp->prev = head;
+    if (!arg || !isdigit(*arg))
+        more_err(line_number, "L<line_number>: usage: push integer");
+
+    value = atoi(arg);
+    new_node = malloc(sizeof(stack_t));
+    if (!new_node)
+        more_err(line_number, "Error: malloc failed");
+
+    new_node->n = value;
+    new_node->next = *stack;
+    new_node->prev = NULL;
+
+    if (*stack)
+        (*stack)->prev = new_node;
+
+    *stack = new_node;
 }
 
-
-/**
- * print_stack - Adds a node to the stack.
- * @stack: Pointer to a pointer pointing to top node of the stack.
- * @line_number: line number of  the opcode.
- */
-void print_stack(stack_t **stack, unsigned int line_number)
+void pall(stack_t **stack, unsigned int line_number)
 {
-	stack_t *tmp;
+    stack_t *current = *stack;
 
-	(void) line_number;
-	if (stack == NULL)
-		exit(EXIT_FAILURE);
-	tmp = *stack;
-	while (tmp != NULL)
-	{
-		printf("%d\n", tmp->n);
-		tmp = tmp->next;
-	}
+    (void)line_number; // Unused variable
+
+    while (current)
+    {
+        printf("%d\n", current->n);
+        current = current->next;
+    }
 }
 
-/**
- * pop_top - Adds a node to the stack.
- * @stack: Pointer to a pointer pointing to top node of the stack.
- * @line_number: Interger representing the line number of of the opcode.
- */
-void pop_top(stack_t **stack, unsigned int line_number)
+void pint(stack_t **stack, unsigned int line_number)
 {
-	stack_t *tmp;
+    if (!stack || !*stack)
+        more_err(line_number, "L<line_number>: can't pint, stack empty");
 
-	if (stack == NULL || *stack == NULL)
-		more_err(7, line_number);
-
-	tmp = *stack;
-	*stack = tmp->next;
-	if (*stack != NULL)
-		(*stack)->prev = NULL;
-	free(tmp);
+    printf("%d\n", (*stack)->n);
 }
 
-/**
- * print_top - Prints the top node of the stack.
- * @stack: Pointer to a pointer pointing to top node of the stack.
- * @line_number: Interger representing the line number of of the opcode.
- */
-void print_top(stack_t **stack, unsigned int line_number)
+void pop(stack_t **stack, unsigned int line_number)
 {
-	if (stack == NULL || *stack == NULL)
-		more_err(6, line_number);
-	printf("%d\n", (*stack)->n);
+    stack_t *temp;
+
+    if (!stack || !*stack)
+        more_err(line_number, "L<line_number>: can't pop an empty stack");
+
+    temp = *stack;
+    *stack = (*stack)->next;
+
+    if (*stack)
+        (*stack)->prev = NULL;
+
+    free(temp);
+}
+
+void swap(stack_t **stack, unsigned int line_number)
+{
+    stack_t *first, *second;
+
+    if (!stack || !*stack || !(*stack)->next)
+        more_err(line_number, "L<line_number>: can't swap, stack too short");
+
+    first = *stack;
+    second = first->next;
+
+    first->next = second->next;
+    if (first->next)
+        first->next->prev = first;
+
+    second->prev = NULL;
+    second->next = first;
+    first->prev = second;
+
+    *stack = second;
 }

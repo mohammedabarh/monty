@@ -1,97 +1,58 @@
 #include "monty.h"
 
-/**
- * nop - Does nothing.
- * @stack: Pointer to a pointer pointing to top node of the stack.
- * @line_number: Interger representing the line number of of the opcode.
- */
+void add(stack_t **stack, unsigned int line_number)
+{
+    int sum;
+
+    if (!stack || !*stack || !(*stack)->next)
+        more_err(line_number, "L<line_number>: can't add, stack too short");
+
+    sum = (*stack)->n + (*stack)->next->n;
+    pop(stack, line_number);
+    (*stack)->n = sum;
+}
+
 void nop(stack_t **stack, unsigned int line_number)
 {
-	(void)stack;
-	(void)line_number;
+    (void)stack;
+    (void)line_number;
 }
 
-
-/**
- * swap_nodes - Swaps the top two elements of the stack.
- * @stack: Pointer to a pointer pointing to top node of the stack.
- * @line_number: Interger representing the line number of of the opcode.
- */
-void swap_nodes(stack_t **stack, unsigned int line_number)
+void sub(stack_t **stack, unsigned int line_number)
 {
-	stack_t *tmp;
+    int difference;
 
-	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
-		more_err(8, line_number, "swap");
-	tmp = (*stack)->next;
-	(*stack)->next = tmp->next;
-	if (tmp->next != NULL)
-		tmp->next->prev = *stack;
-	tmp->next = *stack;
-	(*stack)->prev = tmp;
-	tmp->prev = NULL;
-	*stack = tmp;
+    if (!stack || !*stack || !(*stack)->next)
+        more_err(line_number, "L<line_number>: can't sub, stack too short");
+
+    difference = (*stack)->next->n - (*stack)->n;
+    pop(stack, line_number);
+    (*stack)->n = difference;
 }
 
-/**
- * add_nodes - Adds the top two elements of the stack.
- * @stack: Pointer to a pointer pointing to top node of the stack.
- * @line_number: Interger representing the line number of of the opcode.
- */
-void add_nodes(stack_t **stack, unsigned int line_number)
+void div_func(stack_t **stack, unsigned int line_number)
 {
-	int sum;
+    int quotient;
 
-	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
-		more_err(8, line_number, "add");
+    if (!stack || !*stack || !(*stack)->next)
+        more_err(line_number, "L<line_number>: can't div, stack too short");
 
-	(*stack) = (*stack)->next;
-	sum = (*stack)->n + (*stack)->prev->n;
-	(*stack)->n = sum;
-	free((*stack)->prev);
-	(*stack)->prev = NULL;
+    if ((*stack)->n == 0)
+        more_err(line_number, "L<line_number>: division by zero");
+
+    quotient = (*stack)->next->n / (*stack)->n;
+    pop(stack, line_number);
+    (*stack)->n = quotient;
 }
 
-
-/**
- * sub_nodes - Adds the top two elements of the stack.
- * @stack: Pointer to a pointer pointing to top node of the stack.
- * @line_number: Interger representing the line number of of the opcode.
- */
-void sub_nodes(stack_t **stack, unsigned int line_number)
+void mul(stack_t **stack, unsigned int line_number)
 {
-	int sum;
+    int product;
 
-	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
+    if (!stack || !*stack || !(*stack)->next)
+        more_err(line_number, "L<line_number>: can't mul, stack too short");
 
-		more_err(8, line_number, "sub");
-
-
-	(*stack) = (*stack)->next;
-	sum = (*stack)->n - (*stack)->prev->n;
-	(*stack)->n = sum;
-	free((*stack)->prev);
-	(*stack)->prev = NULL;
-}
-
-
-/**
- * div_nodes - Adds the top two elements of the stack.
- * @stack: Pointer to a pointer pointing to top node of the stack.
- * @line_number: Interger representing the line number of of the opcode.
- */
-void div_nodes(stack_t **stack, unsigned int line_number)
-{
-	int sum;
-
-	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
-		more_err(8, line_number, "div");
-
-	if ((*stack)->n == 0)
-		more_err(9, line_number);
-	(*stack) = (*stack)->next;
-	sum = (*stack)->n / (*stack)->prev->n;
-	(*stack)->n = sum;
-	free((*stack)->prev);
-	(*stack)->prev = NULL;
+    product = (*stack)->next->n * (*stack)->n;
+    pop(stack, line_number);
+    (*stack)->n = product;
 }

@@ -1,44 +1,81 @@
 #include "monty.h"
 
-/**
- * mul_nodes - Adds the top two elements of the stack.
- * @stack: Pointer to a pointer pointing to top node of the stack.
- * @line_number: Interger representing the line number of of the opcode.
- */
-void mul_nodes(stack_t **stack, unsigned int line_number)
+void mod(stack_t **stack, unsigned int line_number)
 {
-	int sum;
+    int remainder;
 
-	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
-		more_err(8, line_number, "mul");
+    if (!stack || !*stack || !(*stack)->next)
+        more_err(line_number, "L<line_number>: can't mod, stack too short");
 
-	(*stack) = (*stack)->next;
-	sum = (*stack)->n * (*stack)->prev->n;
-	(*stack)->n = sum;
-	free((*stack)->prev);
-	(*stack)->prev = NULL;
+    if ((*stack)->n == 0)
+        more_err(line_number, "L<line_number>: division by zero");
+
+    remainder = (*stack)->next->n % (*stack)->n;
+    pop(stack, line_number);
+    (*stack)->n = remainder;
 }
 
-
-/**
- * mod_nodes - Adds the top two elements of the stack.
- * @stack: Pointer to a pointer pointing to top node of the stack.
- * @line_number: Interger representing the line number of of the opcode.
- */
-void mod_nodes(stack_t **stack, unsigned int line_number)
+void pchar(stack_t **stack, unsigned int line_number)
 {
-	int sum;
+    if (!stack || !*stack)
+        more_err(line_number, "L<line_number>: can't pchar, stack empty");
 
-	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
+    if ((*stack)->n < 0 || (*stack)->n > 127)
+        more_err(line_number, "L<line_number>: can't pchar, value out of range");
 
-		more_err(8, line_number, "mod");
+    printf("%c\n", (*stack)->n);
+}
 
+void pstr(stack_t **stack, unsigned int line_number)
+{
+    stack_t *current = *stack;
 
-	if ((*stack)->n == 0)
-		more_err(9, line_number);
-	(*stack) = (*stack)->next;
-	sum = (*stack)->n % (*stack)->prev->n;
-	(*stack)->n = sum;
-	free((*stack)->prev);
-	(*stack)->prev = NULL;
+    (void)line_number; // Unused variable
+
+    while (current && current->n > 0 && current->n < 128)
+    {
+        printf("%c", current->n);
+        current = current->next;
+    }
+    printf("\n");
+}
+
+void rotl(stack_t **stack, unsigned int line_number)
+{
+    stack_t *top;
+
+    if (!stack || !*stack || !(*stack)->next)
+        return; // No action needed if there's less than two elements
+
+    top = *stack;
+    *stack = (*stack)->next;
+    (*stack)->prev = NULL;
+
+    top->next = NULL;
+    stack_t *last = *stack;
+
+    while (last->next != NULL)
+        last = last->next;
+
+    last->next = top;
+    top->prev = last;
+}
+
+void rotr(stack_t **stack, unsigned int line_number)
+{
+    stack_t *last;
+
+    if (!stack || !*stack || !(*stack)->next)
+        return; // No action needed if there's less than two elements
+
+    last = *stack;
+
+    while (last->next != NULL)
+        last = last->next;
+
+    last->next = *stack;
+    (*stack)->prev = last;
+    *stack = last;
+    last->prev->next = NULL;
+    last->prev = NULL;
 }
