@@ -1,58 +1,92 @@
 #include "monty.h"
 
-void add(stack_t **stack, unsigned int line_number)
-{
-    int sum;
-
-    if (!stack || !*stack || !(*stack)->next)
-        more_err(line_number, "L<line_number>: can't add, stack too short");
-
-    sum = (*stack)->n + (*stack)->next->n;
-    pop(stack, line_number);
-    (*stack)->n = sum;
-}
-
+/**
+ * nop - No operation performed.
+ * @stack: Pointer to the top of the stack.
+ * @line_number: The line number of the command.
+ */
 void nop(stack_t **stack, unsigned int line_number)
 {
-    (void)stack;
-    (void)line_number;
+	(void)stack;
+	(void)line_number;
 }
 
-void sub(stack_t **stack, unsigned int line_number)
+/**
+ * swap_nodes - Exchanges the top two elements of the stack.
+ * @stack: Pointer to the top of the stack.
+ * @line_number: The line number of the command.
+ */
+void swap_nodes(stack_t **stack, unsigned int line_number)
 {
-    int difference;
+	stack_t *first;
 
-    if (!stack || !*stack || !(*stack)->next)
-        more_err(line_number, "L<line_number>: can't sub, stack too short");
-
-    difference = (*stack)->next->n - (*stack)->n;
-    pop(stack, line_number);
-    (*stack)->n = difference;
+	if (!stack || !*stack || !(*stack)->next)
+		handle_additional_errors(8, line_number, "swap");
+	first = (*stack)->next;
+	(*stack)->next = first->next;
+	if (first->next)
+		first->next->prev = *stack;
+	first->next = *stack;
+	(*stack)->prev = first;
+	first->prev = NULL;
+	*stack = first;
 }
 
-void div_func(stack_t **stack, unsigned int line_number)
+/**
+ * add_nodes - Sums the top two elements of the stack.
+ * @stack: Pointer to the top of the stack.
+ * @line_number: The line number of the command.
+ */
+void add_nodes(stack_t **stack, unsigned int line_number)
 {
-    int quotient;
+	int total;
 
-    if (!stack || !*stack || !(*stack)->next)
-        more_err(line_number, "L<line_number>: can't div, stack too short");
+	if (!stack || !*stack || !(*stack)->next)
+		handle_additional_errors(8, line_number, "add");
 
-    if ((*stack)->n == 0)
-        more_err(line_number, "L<line_number>: division by zero");
-
-    quotient = (*stack)->next->n / (*stack)->n;
-    pop(stack, line_number);
-    (*stack)->n = quotient;
+	(*stack) = (*stack)->next;
+	total = (*stack)->n + (*stack)->prev->n;
+	(*stack)->n = total;
+	free((*stack)->prev);
+	(*stack)->prev = NULL;
 }
 
-void mul(stack_t **stack, unsigned int line_number)
+/**
+ * sub_nodes - Subtracts the top two elements of the stack.
+ * @stack: Pointer to the top of the stack.
+ * @line_number: The line number of the command.
+ */
+void sub_nodes(stack_t **stack, unsigned int line_number)
 {
-    int product;
+	int difference;
 
-    if (!stack || !*stack || !(*stack)->next)
-        more_err(line_number, "L<line_number>: can't mul, stack too short");
+	if (!stack || !*stack || !(*stack)->next)
+		handle_additional_errors(8, line_number, "sub");
 
-    product = (*stack)->next->n * (*stack)->n;
-    pop(stack, line_number);
-    (*stack)->n = product;
+	(*stack) = (*stack)->next;
+	difference = (*stack)->n - (*stack)->prev->n;
+	(*stack)->n = difference;
+	free((*stack)->prev);
+	(*stack)->prev = NULL;
+}
+
+/**
+ * div_nodes - Divides the top two elements of the stack.
+ * @stack: Pointer to the top of the stack.
+ * @line_number: The line number of the command.
+ */
+void div_nodes(stack_t **stack, unsigned int line_number)
+{
+	int quotient;
+
+	if (!stack || !*stack || !(*stack)->next)
+		handle_additional_errors(8, line_number, "div");
+
+	if ((*stack)->n == 0)
+		handle_additional_errors(9, line_number);
+	(*stack) = (*stack)->next;
+	quotient = (*stack)->n / (*stack)->prev->n;
+	(*stack)->n = quotient;
+	free((*stack)->prev);
+	(*stack)->prev = NULL;
 }

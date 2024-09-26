@@ -1,33 +1,75 @@
 #include "monty.h"
+stack_t *head = NULL;
 
+/**
+ * main - Program entry point.
+ * @argc: Argument count.
+ * @argv: Argument vector.
+ * Return: always 0.
+ */
 int main(int argc, char *argv[])
 {
-    FILE *file;
-    char *line = NULL;
-    size_t len = 0;
-    unsigned int line_number = 0;
-    stack_t *stack = NULL;
+	if (argc != 2)
+	{
+		fprintf(stderr, "USAGE: monty file\n");
+		exit(EXIT_FAILURE);
+	}
+	load_file(argv[1]);
+	free_nodes();
+	return (0);
+}
 
-    if (argc != 2)
-        more_err(0, "USAGE: monty file");
+/**
+ * create_node - Allocates and initializes a new node.
+ * @value: The integer value for the node.
+ * Return: Pointer to the newly created node, or NULL on failure.
+ */
+stack_t *create_node(int value)
+{
+	stack_t *node = malloc(sizeof(stack_t));
+	if (!node)
+		log_error(4);
+	node->next = NULL;
+	node->prev = NULL;
+	node->n = value;
+	return (node);
+}
 
-    file = fopen(argv[1], "r");
-    if (!file)
-        more_err(0, "Error: Can't open file");
+/**
+ * free_nodes - Frees all nodes in the stack.
+ */
+void free_nodes(void)
+{
+	stack_t *current;
 
-    while (getline(&line, &len, file) != -1)
-    {
-        line_number++;
-        char *opcode = strtok(line, " \n\t");
-        if (opcode && opcode[0] != '#')
-        {
-            // Handle opcode
-            ...
-        }
-    }
+	while (head)
+	{
+		current = head;
+		head = head->next;
+		free(current);
+	}
+}
 
-    free(line);
-    fclose(file);
-    // Free stack
-    return (EXIT_SUCCESS);
+/**
+ * add_to_queue - Enqueues a new node at the end of the queue.
+ * @new_node: Pointer to the new node to enqueue.
+ * @line_num: The line number associated with the command.
+ */
+void add_to_queue(stack_t **new_node, __attribute__((unused))unsigned int line_num)
+{
+	stack_t *current;
+
+	if (!new_node || !*new_node)
+		exit(EXIT_FAILURE);
+	if (!head)
+	{
+		head = *new_node;
+		return;
+	}
+	current = head;
+	while (current->next)
+		current = current->next;
+
+	current->next = *new_node;
+	(*new_node)->prev = current;
 }

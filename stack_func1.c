@@ -1,82 +1,74 @@
 #include "monty.h"
 
-void push(stack_t **stack, unsigned int line_number, char *arg)
+/**
+ * add_to_stack - Pushes a new node onto the stack.
+ * @new_node: Pointer to the node to be added.
+ * @line_num: The line number of the command.
+ */
+void add_to_stack(stack_t **new_node, __attribute__((unused))unsigned int line_num)
 {
-    stack_t *new_node;
-    int value;
+	stack_t *previous;
 
-    if (!arg || !isdigit(*arg))
-        more_err(line_number, "L<line_number>: usage: push integer");
-
-    value = atoi(arg);
-    new_node = malloc(sizeof(stack_t));
-    if (!new_node)
-        more_err(line_number, "Error: malloc failed");
-
-    new_node->n = value;
-    new_node->next = *stack;
-    new_node->prev = NULL;
-
-    if (*stack)
-        (*stack)->prev = new_node;
-
-    *stack = new_node;
+	if (!new_node || !*new_node)
+		exit(EXIT_FAILURE);
+	if (!head)
+	{
+		head = *new_node;
+		return;
+	}
+	previous = head;
+	head = *new_node;
+	head->next = previous;
+	previous->prev = head;
 }
 
-void pall(stack_t **stack, unsigned int line_number)
+/**
+ * print_stack - Outputs all elements in the stack.
+ * @stack: Pointer to the top of the stack.
+ * @line_number: The line number of the command.
+ */
+void print_stack(stack_t **stack, unsigned int line_number)
 {
-    stack_t *current = *stack;
+	stack_t *current;
 
-    (void)line_number; // Unused variable
-
-    while (current)
-    {
-        printf("%d\n", current->n);
-        current = current->next;
-    }
+	(void) line_number;
+	if (!stack)
+		exit(EXIT_FAILURE);
+	current = *stack;
+	while (current)
+	{
+		printf("%d\n", current->n);
+		current = current->next;
+	}
 }
 
-void pint(stack_t **stack, unsigned int line_number)
+/**
+ * pop_top - Removes the top element from the stack.
+ * @stack: Pointer to the top of the stack.
+ * @line_number: The line number of the command.
+ */
+void pop_top(stack_t **stack, unsigned int line_number)
 {
-    if (!stack || !*stack)
-        more_err(line_number, "L<line_number>: can't pint, stack empty");
+	stack_t *current;
 
-    printf("%d\n", (*stack)->n);
+	if (!stack || !*stack)
+		handle_additional_errors(7, line_number);
+
+	current = *stack;
+	*stack = current->next;
+	if (*stack)
+		(*stack)->prev = NULL;
+	free(current);
 }
 
-void pop(stack_t **stack, unsigned int line_number)
+/**
+ * print_top - Displays the top element of the stack.
+ * @stack: Pointer to the top of the stack.
+ * @line_number: The line number of the command.
+ */
+void print_top(stack_t **stack, unsigned int line_number)
 {
-    stack_t *temp;
-
-    if (!stack || !*stack)
-        more_err(line_number, "L<line_number>: can't pop an empty stack");
-
-    temp = *stack;
-    *stack = (*stack)->next;
-
-    if (*stack)
-        (*stack)->prev = NULL;
-
-    free(temp);
-}
-
-void swap(stack_t **stack, unsigned int line_number)
-{
-    stack_t *first, *second;
-
-    if (!stack || !*stack || !(*stack)->next)
-        more_err(line_number, "L<line_number>: can't swap, stack too short");
-
-    first = *stack;
-    second = first->next;
-
-    first->next = second->next;
-    if (first->next)
-        first->next->prev = first;
-
-    second->prev = NULL;
-    second->next = first;
-    first->prev = second;
-
-    *stack = second;
+	if (!stack || !*stack)
+		handle_additional_errors(6, line_number);
+	printf("%d\n", (*stack)->n);
 }
