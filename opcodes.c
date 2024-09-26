@@ -1,139 +1,89 @@
 #include "monty.h"
 
 /**
- * push - Pushes an element to the stack
+ * multiply_top_two - Multiplies the top two elements of the stack
  * @stack: Double pointer to the top of the stack
- * @line_number: Line number in the Monty file
+ * @line_number: Line number in the file
  */
-void push(stack_t **stack, unsigned int line_number)
+void multiply_top_two(stack_element_t **stack, unsigned int line_number)
 {
-    char *arg = strtok(NULL, " \t\n");
-    int n;
-    stack_t *new_node;
-
-    if (arg == NULL || !is_number(arg))
+    if (!*stack || !(*stack)->next)
     {
-        fprintf(stderr, "L%d: usage: push integer\n", line_number);
+        fprintf(stderr, "L%d: can't mul, stack too short\n", line_number);
         exit(EXIT_FAILURE);
     }
 
-    n = atoi(arg);
-    new_node = malloc(sizeof(stack_t));
-    if (new_node == NULL)
-    {
-        fprintf(stderr, "Error: malloc failed\n");
-        exit(EXIT_FAILURE);
-    }
-
-    new_node->n = n;
-    new_node->prev = NULL;
-    new_node->next = *stack;
-
-    if (*stack != NULL)
-        (*stack)->prev = new_node;
-
-    *stack = new_node;
+    (*stack)->next->value *= (*stack)->value;
+    pop_element(stack, line_number);
 }
 
 /**
- * pall - Prints all values on the stack
+ * modulo_top_two - Computes the modulo of the second top element by the top element
  * @stack: Double pointer to the top of the stack
- * @line_number: Line number in the Monty file (unused)
+ * @line_number: Line number in the file
  */
-void pall(stack_t **stack, unsigned int line_number)
+void modulo_top_two(stack_element_t **stack, unsigned int line_number)
 {
-    stack_t *current = *stack;
+    if (!*stack || !(*stack)->next)
+    {
+        fprintf(stderr, "L%d: can't mod, stack too short\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+
+    if ((*stack)->value == 0)
+    {
+        fprintf(stderr, "L%d: division by zero\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+
+    (*stack)->next->value %= (*stack)->value;
+    pop_element(stack, line_number);
+}
+
+/**
+ * rotate_left - Rotates the stack to the top
+ * @stack: Double pointer to the top of the stack
+ * @line_number: Line number in the file (unused)
+ */
+void rotate_left(stack_element_t **stack, unsigned int line_number)
+{
+    stack_element_t *last;
     (void)line_number;
 
-    while (current != NULL)
+    if (*stack && (*stack)->next)
     {
-        printf("%d\n", current->n);
-        current = current->next;
-    }
-}
+        last = *stack;
+        while (last->next)
+            last = last->next;
 
-/**
- * pint - Prints the value at the top of the stack
- * @stack: Double pointer to the top of the stack
- * @line_number: Line number in the Monty file
- */
-void pint(stack_t **stack, unsigned int line_number)
-{
-    if (*stack == NULL)
-    {
-        fprintf(stderr, "L%d: can't pint, stack empty\n", line_number);
-        exit(EXIT_FAILURE);
-    }
-
-    printf("%d\n", (*stack)->n);
-}
-
-/**
- * pop - Removes the top element of the stack
- * @stack: Double pointer to the top of the stack
- * @line_number: Line number in the Monty file
- */
-void pop(stack_t **stack, unsigned int line_number)
-{
-    stack_t *temp;
-
-    if (*stack == NULL)
-    {
-        fprintf(stderr, "L%d: can't pop an empty stack\n", line_number);
-        exit(EXIT_FAILURE);
-    }
-
-    temp = *stack;
-    *stack = (*stack)->next;
-    if (*stack != NULL)
+        last->next = *stack;
+        *stack = (*stack)->next;
         (*stack)->prev = NULL;
-    free(temp);
-}
-
-/**
- * swap - Swaps the top two elements of the stack
- * @stack: Double pointer to the top of the stack
- * @line_number: Line number in the Monty file
- */
-void swap(stack_t **stack, unsigned int line_number)
-{
-    int temp;
-
-    if (*stack == NULL || (*stack)->next == NULL)
-    {
-        fprintf(stderr, "L%d: can't swap, stack too short\n", line_number);
-        exit(EXIT_FAILURE);
+        last->next->next = NULL;
+        last->next->prev = last;
     }
-
-    temp = (*stack)->n;
-    (*stack)->n = (*stack)->next->n;
-    (*stack)->next->n = temp;
 }
 
 /**
- * add - Adds the top two elements of the stack
+ * rotate_right - Rotates the stack to the bottom
  * @stack: Double pointer to the top of the stack
- * @line_number: Line number in the Monty file
+ * @line_number: Line number in the file (unused)
  */
-void add(stack_t **stack, unsigned int line_number)
+void rotate_right(stack_element_t **stack, unsigned int line_number)
 {
-    if (*stack == NULL || (*stack)->next == NULL)
-    {
-        fprintf(stderr, "L%d: can't add, stack too short\n", line_number);
-        exit(EXIT_FAILURE);
-    }
-
-    (*stack)->next->n += (*stack)->n;
-    pop(stack, line_number);
-}
-
-/**
- * nop - Does nothing
- * @stack: Double pointer to the top of the stack (unused)
- * @line_number: Line number in the Monty file (unused)
- */
-void nop(stack_t **stack, unsigned int line_number)
-{
-    (void)stack;
+    stack_element_t *last;
     (void)line_number;
+
+    if (*stack && (*stack)->next)
+    {
+        last = *stack;
+        while (last->next)
+            last = last->next;
+
+        last->next = *stack;
+        last->prev->next = NULL;
+        (*stack)->prev = last;
+        *stack = last;
+        (*stack)->prev = NULL;
+    }
 }
