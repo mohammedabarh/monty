@@ -1,42 +1,32 @@
 #include "monty.h"
 
-/**
- * multiply_stack_nodes - Multiplies the top two elements of the stack.
- * @stack: Pointer to a pointer pointing to the top node of the stack.
- * @line_number: Integer representing the line number of the opcode.
- */
-void multiply_stack_nodes(stack_t **stack, unsigned int line_number)
+/* Push function to add a value to the stack */
+void push(stack_t **stack, unsigned int line_number, int value)
 {
-    int product;
+    stack_t *new_node = malloc(sizeof(stack_t));
+    if (!new_node)
+        handle_error("Error: malloc failed", line_number);
 
-    if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
-        handle_more_error(8, line_number, "mul");
+    new_node->n = value;
+    new_node->prev = NULL;
+    new_node->next = *stack;
+    
+    if (*stack != NULL)
+        (*stack)->prev = new_node;
 
-    (*stack) = (*stack)->next;
-    product = (*stack)->n * (*stack)->prev->n;
-    (*stack)->n = product;
-    free((*stack)->prev);
-    (*stack)->prev = NULL;
+    *stack = new_node;
 }
 
-/**
- * modulate_stack_nodes - Computes the modulus of the top two elements of the stack.
- * @stack: Pointer to a pointer pointing to the top node of the stack.
- * @line_number: Integer representing the line number of the opcode.
- */
-void modulate_stack_nodes(stack_t **stack, unsigned int line_number)
+/* Pall function to print all values on the stack */
+void pall(stack_t **stack, unsigned int line_number)
 {
-    int remainder;
+    stack_t *current = *stack;
+    (void)line_number;
 
-    if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
-        handle_more_error(8, line_number, "mod");
-
-    if ((*stack)->n == 0)
-        handle_more_error(9, line_number);
-
-    (*stack) = (*stack)->next;
-    remainder = (*stack)->n % (*stack)->prev->n;
-    (*stack)->n = remainder;
-    free((*stack)->prev);
-    (*stack)->prev = NULL;
+    while (current != NULL)
+    {
+        printf("%d\n", current->n);
+        current = current->next;
+    }
 }
+
