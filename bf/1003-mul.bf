@@ -1,39 +1,5 @@
-# Read from stdin
->, >, <<
-
-# Convert to integer (atoi)
-+++++++
-[
-    >----- ---
-    >----- ---
-    <<-
-]
-
-# Multiply two integers
->[
-    >[>+>+<<-]
-    >[<+>-]
-    <<-
-]
-
-# Separate two digits inputted
->[-]>+> >++++++ +++++<
-[
-    ->- [>>>]++++++ +++++<<+
-    [<<<]>>>>
-]
-<-
-<++++++ +++++>>>[-<<<->>>]<<<
-
-# Convert integer to ASCII (itoa)
-<+++++++
-[
-    >++++++ ++++>
-    [++++++ ++++>]
-    <[<]>-
-]
-
-# Print with newline
->>[.<<]<[<<]>>.
->>,.
+,>++++[<-------->-],            # Read two digits and convert to integers
+[->+>+<<]>[-<+>]<               # Multiply the two numbers
+.                               # Print the result
+++++++++++.                     # Print newline (ASCII code 10)
 
