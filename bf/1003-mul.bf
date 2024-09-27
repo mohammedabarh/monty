@@ -1,52 +1,58 @@
-,>,         Read two digits
-<           Move back to first digit
-[           Start multiplication loop
-    -       Decrement digit
-    >       Move to second digit
-    [       Start inner loop
+,       Read first digit
+>       Move to second cell
+,       Read second digit
+[
+    <   Move to first cell
+    [
         >+  Add to result
-        >+  Add to temporary copy
-        <<- Decrement second digit
+        >+  Add to temp
+        <<- Decrement first digit
     ]
-    >>      Move to temporary copy
-    [       Restore second digit
-        <<+
-        >>-
+    >>  Move to temp
+    [
+        <<+ Restore first digit
+        >>- Clear temp
     ]
-    <<<     Move back to first digit
+    <-  Decrement second digit
 ]
->>>         Move to result
->++++++++++  Set up "10" for division
-<           Move back to result
+<       Move to result
+
+>>++++++++++<<    Set up 10 in third cell
+
 [           Start division loop
-    >       Move to "10"
-    [       Divide by 10
-        >+  Add to quotient
-        >+  Add to remainder
-        <<- Subtract from "10"
-    ]
-    >       Move to quotient
-    [       Restore "10"
-        <+
-        >-
-    ]
-    <<      Move back to result
-    -       Subtract 1 from result
+    >       Move to tens place
+    [>+>+<<-]   Move digit to fourth and fifth cells
+    >
+    [<+>-]     Move digit back to fourth cell
+    <<-        Decrement original number
 ]
->>          Move to remainder
-++++++++    Add 8 (for ASCII offset later)
-[           Loop to shift remainder
-    <+      Add to quotient
-    >-      Subtract from remainder
+
+>>[>+<-]    Move tens digit to fifth cell
+
+>           Move to ones digit (fourth cell)
+++++++      Add 6
+[
+    <++++++>    Add 6 to tens digit (fifth cell)
+    -           Decrement counter
 ]
-<           Move to quotient
-[           Loop to output digits
-    <<++++++++++>>    Add 10 to counter
+<           Move to tens digit
+++++++      Add 6 more
+
+>           Move to ones digit
+[<+>-]      Move ones digit to tens digit cell
+
+<           Move to tens digit
+[           Print tens digit if it exists
+    -
+    >>++++++++++.  Print digit
+    [-]        Clear print cell
+    <<
 ]
-<++++++++++          Add 10 more to counter (now 48 for ASCII "0")
-<           Move to leftmost digit
-[           Output loop
-    >.      Output character and move right
-    [-]     Clear cell
-]
-++++++++++. Output newline
+
+>           Move to ones digit
+++++++++    Add 8 (total 48 for ASCII '0')
+.           Print ones digit
+
+>           Move to newline cell
+++++++++++  Set to 10
+.           Print newline
