@@ -1,50 +1,50 @@
 #include "monty.h"
 /**
-* opcode_execute - executes the opcode
+* run_opcode - executes the opcode
 * @stack: head linked list - stack
-* @counter: line_counter
-* @file: poiner to monty file
+* @line_number: line_counter
+* @file: pointer to monty file
 * @content: line content
 * Return: no return
 */
-int opcode_execute(char *content, stack_t **stack, unsigned int counter, FILE *file)
+int run_opcode(char *content, stack_t **stack, unsigned int line_number, FILE *file)
 {
-	instruction_t opst[] = {
-				{"push", stack_push}, {"pall", stack_pall}, {"pint", stack_pint},
-				{"pop", stack_pop},
-				{"swap", stack_swap},
-				{"add", stack_add},
-				{"nop", stack_nop},
-				{"sub", stack_sub},
-				{"div", stack_div},
-				{"mul", stack_mul},
-				{"mod", stack_mod},
-				{"pchar", stack_pchar},
-				{"pstr", stack_pstr},
-				{"rotl", stack_rotl},
-				{"rotr", stack_rotr},
-				{"queue", stack_queue},
-				{"stack", stack_stack},
+	instruction_t ops[] = {
+				{"push", op_push}, {"pall", op_pall}, {"pint", op_pint},
+				{"pop", op_pop},
+				{"swap", op_swap},
+				{"add", op_add},
+				{"nop", op_nop},
+				{"sub", op_sub},
+				{"div", op_div},
+				{"mul", op_mul},
+				{"mod", op_mod},
+				{"pchar", op_pchar},
+				{"pstr", op_pstr},
+				{"rotl", op_rotl},
+				{"rotr", op_rotr},
+				{"queue", op_queue},
+				{"stack", op_stack},
 				{NULL, NULL}
 				};
 	unsigned int i = 0;
-	char *op;
+	char *opcode;
 
-	op = strtok(content, " \n\t");
-	if (op && op[0] == '#')
+	opcode = strtok(content, " \n\t");
+	if (opcode && opcode[0] == '#')
 		return (0);
 	bus.arg = strtok(NULL, " \n\t");
-	while (opst[i].opcode && op)
+	while (ops[i].opcode && opcode)
 	{
-		if (strcmp(op, opst[i].opcode) == 0)
-		{	opst[i].f(stack, counter);
+		if (strcmp(opcode, ops[i].opcode) == 0)
+		{	ops[i].f(stack, line_number);
 			return (0);
 		}
 		i++;
 	}
-	if (op && opst[i].opcode == NULL)
+	if (opcode && ops[i].opcode == NULL)
 	{ 
-        fprintf(stderr, "L%d: unknown instruction %s\n", counter, op);
+        fprintf(stderr, "L%d: unknown instruction %s\n", line_number, opcode);
 		fclose(file);
 		free(content);
 		free_stack(*stack);
