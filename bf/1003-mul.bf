@@ -1,29 +1,39 @@
->, >, <<               # Read two digits
-+++++ +                # Convert to integers
-[                       # Loop to subtract 48 from each digit
-    >----- ---
-    >----- ---
+# Input reading section
+>,>,<<
+
+# Convert input to integer (atoi logic)
+++++ ++
+[
+    >---- ----
+    >---- ----
     <<-
 ]
-[                       # Multiplication loop
-    >
-    [>+>+<<-]           # Copy for multiplication
+
+# Multiplication of two integers
+>[ 
+    >[>+>+<<-]
     >[<+>-]
     <<-
 ]
->[-]>+> >+++++ +++++<  # Prepare for print
-[                       # Loop to adjust ASCII values
-    - >- [>>>]+++++ +++++<<+
+
+# Separate two digits from input
+>[-]>+>>++++ +++++< 
+[ 
+    - >-[>>>]+++++ +++++<<+ 
     [<<<]>>>>
 ]
-<-                     # Clean up
+<-
 <+++++ +++++>>>[-<<<->>>]<<<
-<+++++ +               # Convert result to ASCII
-[                       # Loop to print the result
+
+# Convert integer to ASCII (itoa logic)
+<+++++ +
+[
     >+++++ +++>
     [+++++ +++>]
     <[<]>-
 ]
->>[.<<]<[<<]>>.        # Print result with newline
->>,.                   # Ensure newline is printed
+
+# Output result followed by newline
+>>[.<<]<[<<]>>.
+>>,.
 
