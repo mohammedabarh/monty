@@ -1,16 +1,26 @@
-,>++++++++[<------>-]  # Read first number and normalize it (read1)
-,>++++++++[<------>-]  # Read second number and normalize it (read2)
-<<  # Move to the cell holding the first number
-[->  # Start outer loop (decrement first number each iteration)
-    [>+>+<<-]  # Copy second number to two temporary cells
-    >>  # Move to the first temporary cell
-    [<<+>>-]  # Move value back to the second number cell
-    <  # Move back to the outer loop cell
-]  # End outer loop
+,>++++++++[<------>-]  # Read first number and convert from ASCII (normalize1)
+,>++++++++[<------>-]  # Read second number and convert from ASCII (normalize2)
+<<                      # Move to the first number's cell
+[                       # Start multiplication loop
+    ->                  # Decrement the first number
+    (startclone)        # Begin cloning process
+    [>+>+<<-]           # Copy the second number to two temporary cells
+    >>[-<<+>>]          # Restore one copy to the original cell
+    (endclone)          # End cloning process
+    <                   # Move back to the first number's cell
+]                       # End multiplication loop
 
-# At this point, the result is in the second temporary cell
-# We now normalize the result to be printable
->>[-]  # Reset the cell to zero
-<++++[>++++[>+++<-]<-]  # Add 48 ('0') to the cell holding the result
->>.  # Print the result from the cell
+(add)                   # Prepare result for ASCII conversion
+>>>>>++++++++++         # Move to the result cell and initialize conversion
+(start)                 # Start conversion process
+<                       # Adjust position
+[                       # Loop to convert to ASCII
+    -                   # Decrement result cell
+    [>+>>]>[+[-<+>]>+>>]# Perform conversion
+    <<<<<               # Reposition for next iteration
+]                       # End conversion loop
+>>>>++++++++[<++++++>-]<.# Print tens place
+<[->>+<<]               # Adjust for units place
+>>>++++++++[<++++++>-]<.# Print units place
+>++++++++++.)           # Finalize and print
 
