@@ -1,35 +1,40 @@
-# Input: Two integers, separated by a space, from stdin
-# Output: The result of their multiplication printed to stdout
+# Read input
+>,>,>,>,>,>,>,>,>,>
 
-,>>>,   # Read two characters from stdin
-+++++++ # Convert them to integer form (atoi)
+# Convert to integer using adjusted logic for input
++++++ +
 [
-    >----- ---     # Adjust the integer range
-    >----- ---     # Adjust the integer range for the second value
-    <<-            # Loop back to ensure both values are in correct form
+ >----- ---
+ >----- ---
+ <<-
 ]
-# Multiply two integers
->[ 
-    >[>+>+<<-]     # Perform the repeated addition
-    >[<+>-]        # Continue adding to complete multiplication
-    <<-            # Final step of the multiplication process
+
+# Multiplication logic for two integers
+> [
+ > [>+>+<<-]  # Shift and add
+ > [<+>-]     # Reverse the shift
+ <<-          # Move back to original position
 ]
-# Separate the input digits
->[->+>]+++++++ <   # Prepare the digits for printing
+
+# Separate two input digits
+> [-]>+>>+++++ +++++<
 [
-    - >- [>>>]+++++ +++++<<+  # Shift and adjust the numbers for output
-    [<<<]>>>>                 # Print the result
+ - >- [>>>]+++++ +++++<<+
+ [<<<]>>>>
 ]
-<-                     # Final adjustments to end the loop cleanly
-<+++++++ >>>[-<<<->>>]<<<  # Convert final result into readable form
-# Convert the result back to characters (itoa)
-<++++++
+
+# Adjust positions
+<-
+<+++++ +++++>>>[-<<<->>>]<<<
+
+# Convert to character for output (itoa logic)
+<+++++ +
 [
-    >+++++ ++++>            # Adjust value to printable characters
-    [+++++ ++>]             # Further adjustment for larger values
-    <[<]>-                  # Final adjustment before printing
+ >+++++ +++>
+ [+++++ +++>]
+ <[<]>-
 ]
-# Print result with newline
->>[.<<]<[<<]>>.             # Output the final multiplication result
->>,.                       # Print a newline after the result
+
+# Print the result with newline
+>>[.<<]<[<<]>>.
 
