@@ -1,15 +1,14 @@
 #include "monty.h"
-
-/* Free the stack */
-void free_stack(stack_t *stack)
+/**
+ * stack_stack - sets the format of the data to a stack (LIFO)
+ * @head: stack head
+ * @counter: line_number
+ * Return: no return
+*/
+void stack_stack(stack_t **head, unsigned int counter)
 {
-    stack_t *temp;
-
-    while (stack)
-    {
-        temp = stack;
-        stack = stack->next;
-        free(temp);
-    }
+	(void)head;
+	(void)counter;
+	bus.lifi = 0;
 }
 
