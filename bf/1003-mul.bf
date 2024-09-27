@@ -1,20 +1,20 @@
-,               # Input first digit
->,              # Input second digit
--[->+<]         # Convert both inputs to numbers (subtract 48 from each)
-<[              # Multiply the two numbers
-  >>[->+>+<<]   # Perform the multiplication by repeatedly adding
-  <<[->>-<<]    # Shift result into the correct position
-]              
->[->+<]         # Move final result into one cell
->++++++++++     # Convert back to ASCII (to start from '0')
+,                                # Read first digit
+>,                               # Read second digit
+-[->+<]                          # Convert both inputs to numbers (ASCII to decimal)
+<[                               # Start the multiplication process
+  >>[->+>+<<]                    # Copy and accumulate multiplication result
+  <<[->>-<<]                     # Shift result to the correct cell
+]                                # End the loop
+>[->+<]                          # Normalize result into a single cell
+>++++++++++                      # Prepare for ASCII conversion
 
-[->+++++<]>    # Handle tens digit if the result is two digits
-[->+++<]>+.     # Print the tens digit if present
+[->+++++<]>                      # Handle two-digit results (print tens place)
+[->+++<]>+.                      # Print tens place if applicable
 
-++++++++++      # Prepare for the ones digit
-[->+++++<]>     # Handle ones digit
-.               # Print the ones digit
+++++++++++                       # Prepare to print the ones digit
+[->+++++<]>                      # Handle ones digit
+.                                # Print ones digit
 
-+++[->++++<]    # Print newline ('\n', ASCII 10)
-.               # Output the newline
++++[->++++<]                     # Move to newline ('\n', ASCII 10)
+.                                # Output newline
 
