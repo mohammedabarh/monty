@@ -1,13 +1,9 @@
-,>,                     Read two digits
->++++++[<--------<-------->>-]   Convert from ASCII to decimal
-<<[                     Multiplication loop
-  >[>+>+<<-]            Move first number to two cells
-  >>[<<+>>-]            Move back to original cell
-  <<<-                  Decrement first number
-]
->[-]<                   Clear temporary cells
->>[<<+>>-]              Move result to first cell
-<<                      Move pointer to first cell
->++++++[<++++++++>-]<   Convert to ASCII
-.                       Print result
->+++++++++[<++++++++>-]<.  Print newline
+   ++++++++[>++++++++<-]>+.             # Set up initial memory state
+   ,                                    # Read first digit
+   [->++++++<]>                         # Convert ASCII to numeric
+   >,                                   # Move to next cell and read second digit
+   [->++++++<]>                         # Convert ASCII to numeric
+   <[->[>+>+<<-]>[<+>-]>>[<+>-]<<-]     # Multiply the two digits
+   [->++++++<]>.[-]                     # Convert numeric result to ASCII and print
+   .
+
