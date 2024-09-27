@@ -1,99 +1,94 @@
 #include "monty.h"
 
 /**
- * print_char_node - Prints the ASCII value at the top of the stack.
+ * display_char - Prints the ASCII value.
  * @stack: Pointer to a pointer pointing to the top node of the stack.
  * @line_number: Integer representing the line number of the opcode.
  */
-void print_char_node(stack_t **stack, unsigned int line_number)
+void display_char(stack_t **stack, unsigned int line_number)
 {
-	int ascii;
+    int ascii_value;
 
-	if (stack == NULL || *stack == NULL)
-		char_stack_error(11, line_number);
+    if (stack == NULL || *stack == NULL)
+        handle_string_error(11, line_number);
 
-	ascii = (*stack)->n;
-	if (ascii < 0 || ascii > 127)
-		char_stack_error(10, line_number);
-
-	printf("%c\n", ascii);
+    ascii_value = (*stack)->n;
+    if (ascii_value < 0 || ascii_value > 127)
+        handle_string_error(10, line_number);
+    
+    printf("%c\n", ascii_value);
 }
 
 /**
- * print_string_nodes - Prints a string formed by elements in the stack.
+ * display_string - Prints a string.
  * @stack: Pointer to a pointer pointing to the top node of the stack.
- * @ln: Integer representing the line number of the opcode.
+ * @line_number: Integer representing the line number of the opcode.
  */
-void print_string_nodes(stack_t **stack, __attribute__((unused)) unsigned int ln)
+void display_string(stack_t **stack, __attribute__((unused)) unsigned int line_number)
 {
-	int ascii;
-	stack_t *tmp;
+    int ascii_value;
+    stack_t *temp_node;
 
-	if (stack == NULL || *stack == NULL)
-	{
-		printf("\n");
-		return;
-	}
+    if (stack == NULL || *stack == NULL)
+    {
+        printf("\n");
+        return;
+    }
 
-	tmp = *stack;
-	while (tmp != NULL)
-	{
-		ascii = tmp->n;
-		if (ascii <= 0 || ascii > 127)
-			break;
-
-		printf("%c", ascii);
-		tmp = tmp->next;
-	}
-	printf("\n");
+    temp_node = *stack;
+    while (temp_node != NULL)
+    {
+        ascii_value = temp_node->n;
+        if (ascii_value <= 0 || ascii_value > 127)
+            break;
+        printf("%c", ascii_value);
+        temp_node = temp_node->next;
+    }
+    printf("\n");
 }
 
 /**
- * rotate_left - Rotates the top element of the stack to the bottom.
+ * rotate_left - Rotates the first node of the stack to the bottom.
  * @stack: Pointer to a pointer pointing to the top node of the stack.
- * @ln: Integer representing the line number of the opcode.
+ * @line_number: Integer representing the line number of the opcode.
  */
-void rotate_left(stack_t **stack, __attribute__((unused)) unsigned int ln)
+void rotate_left(stack_t **stack, __attribute__((unused)) unsigned int line_number)
 {
-	stack_t *tmp;
+    stack_t *temp_node;
 
-	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
-		return;
+    if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
+        return;
 
-	tmp = *stack;
-	while (tmp->next != NULL)
-		tmp = tmp->next;
+    temp_node = *stack;
+    while (temp_node->next != NULL)
+        temp_node = temp_node->next;
 
-	tmp->next = *stack;
-	(*stack)->prev = tmp;
-	*stack = (*stack)->next;
-	(*stack)->prev->next = NULL;
-	(*stack)->prev = NULL;
+    temp_node->next = *stack;
+    (*stack)->prev = temp_node;
+    *stack = (*stack)->next;
+    (*stack)->prev->next = NULL;
+    (*stack)->prev = NULL;
 }
 
 /**
- * rotate_right - Rotates the bottom element of the stack to the top.
+ * rotate_right - Rotates the last node of the stack to the top.
  * @stack: Pointer to a pointer pointing to the top node of the stack.
- * @ln: Integer representing
- * rotate_right - Rotates the bottom element of the stack to the top.
- * @stack: Pointer to a pointer pointing to the top node of the stack.
- * @ln: Integer representing the line number of the opcode.
+ * @line_number: Integer representing the line number of the opcode.
  */
-void rotate_right(stack_t **stack, __attribute__((unused)) unsigned int ln)
+void rotate_right(stack_t **stack, __attribute__((unused)) unsigned int line_number)
 {
-	stack_t *tmp;
+    stack_t *temp_node;
 
-	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
-		return;
+    if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
+        return;
 
-	tmp = *stack;
-	while (tmp->next != NULL)
-		tmp = tmp->next;
+    temp_node = *stack;
+    while (temp_node->next != NULL)
+        temp_node = temp_node->next;
 
-	tmp->next = *stack;
-	tmp->prev->next = NULL;
-	tmp->prev = NULL;
-	(*stack)->prev = tmp;
-	(*stack) = tmp;
+    temp_node->next = *stack;
+    temp_node->prev->next = NULL;
+    temp_node->prev = NULL;
+    (*stack)->prev = temp_node;
+    (*stack) = temp_node;
 }
-

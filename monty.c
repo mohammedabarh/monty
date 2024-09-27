@@ -3,10 +3,11 @@
 stack_t *head = NULL;
 
 /**
- * main - Entry point for the Monty interpreter.
- * @argc: Argument count.
- * @argv: Argument vector.
- * Return: Always 0 on success.
+ * main - Entry point
+ * @argc: Argument count
+ * @argv: List of arguments
+ * 
+ * Return: Always 0
  */
 int main(int argc, char *argv[])
 {
@@ -15,34 +16,39 @@ int main(int argc, char *argv[])
         fprintf(stderr, "USAGE: monty file\n");
         exit(EXIT_FAILURE);
     }
-    open_script(argv[1]);
-    free_stack();
+    open_file_handler(argv[1]);
+    free_nodes();  // Ensure using free_nodes to free allocated memory
     return (0);
 }
 
 /**
- * create_new_node - Allocates memory for a new node.
- * @n: Value to be stored in the node.
- * Return: Pointer to the new node or NULL on failure.
+ * create_stack_node - Creates a stack node.
+ * @n: Number to go inside the node.
+ * 
+ * Return: Upon success, a pointer to the node. Otherwise NULL.
  */
-stack_t *create_new_node(int n)
+stack_t *create_stack_node(int n)
 {
-    stack_t *node = malloc(sizeof(stack_t));
+    stack_t *node;
 
+    node = malloc(sizeof(stack_t));
     if (node == NULL)
-        print_error(4);
-    node->n = n;
+        handle_error(4);
     node->next = NULL;
     node->prev = NULL;
+    node->n = n;
     return (node);
 }
 
 /**
- * free_stack - Frees the entire stack.
+ * free_nodes - Frees nodes in the stack.
  */
-void free_stack(void)
+void free_nodes(void)
 {
     stack_t *tmp;
+
+    if (head == NULL)
+        return;
 
     while (head != NULL)
     {
@@ -53,20 +59,16 @@ void free_stack(void)
 }
 
 /**
- * append_to_queue - Appends a node to the queue.
+ * enqueue_to_queue - Adds a node to the queue.
  * @new_node: Pointer to the new node.
- * @ln: Line number of the operation (optional for logging).
+ * @line_number: Line number of the opcode.
  */
-void append_to_queue(stack_t **new_node, unsigned int ln)
+void enqueue_to_queue(stack_t **new_node, __attribute__((unused)) unsigned int line_number)
 {
     stack_t *tmp;
 
-    // Use the parameter for logging or error handling
     if (new_node == NULL || *new_node == NULL)
-    {
-        fprintf(stderr, "Error at line %u: new_node is NULL\n", ln);
         exit(EXIT_FAILURE);
-    }
 
     if (head == NULL)
     {
