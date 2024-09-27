@@ -1,11 +1,29 @@
-,>,                     Read two single-digit numbers from stdin
-[<+>-]<                 Move second number to first cell
->++++++[<---------->-]  Convert ASCII to integer for first number
-<                       Move back to first cell
-[                       Start multiplication loop
-  >++++++[<+++++++>-]   Multiply by adding 6 times 7
-  <-                    Decrement the counter
+>, >, <<               # Read two digits
++++++ +                # Convert to integers
+[                       # Loop to subtract 48 from each digit
+    >----- ---
+    >----- ---
+    <<-
 ]
->++++++[<++++++++>-]    Convert result back to ASCII
-<.                      Print result
->++++++++++.            Print newline
+[                       # Multiplication loop
+    >
+    [>+>+<<-]           # Copy for multiplication
+    >[<+>-]
+    <<-
+]
+>[-]>+> >+++++ +++++<  # Prepare for print
+[                       # Loop to adjust ASCII values
+    - >- [>>>]+++++ +++++<<+
+    [<<<]>>>>
+]
+<-                     # Clean up
+<+++++ +++++>>>[-<<<->>>]<<<
+<+++++ +               # Convert result to ASCII
+[                       # Loop to print the result
+    >+++++ +++>
+    [+++++ +++>]
+    <[<]>-
+]
+>>[.<<]<[<<]>>.        # Print result with newline
+>>,.                   # Ensure newline is printed
+
