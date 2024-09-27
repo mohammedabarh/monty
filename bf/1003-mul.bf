@@ -1,40 +1,39 @@
-# Read input
->,>,>,>,>,>,>,>,>,>
+# Read from stdin
+>, >, <<
 
-# Convert to integer using adjusted logic for input
-+++++ +
+# Convert to integer (atoi)
++++++++
 [
- >----- ---
- >----- ---
- <<-
+    >----- ---
+    >----- ---
+    <<-
 ]
 
-# Multiplication logic for two integers
-> [
- > [>+>+<<-]  # Shift and add
- > [<+>-]     # Reverse the shift
- <<-          # Move back to original position
+# Multiply two integers
+>[
+    >[>+>+<<-]
+    >[<+>-]
+    <<-
 ]
 
-# Separate two input digits
-> [-]>+>>+++++ +++++<
+# Separate two digits inputted
+>[-]>+> >++++++ +++++<
 [
- - >- [>>>]+++++ +++++<<+
- [<<<]>>>>
+    ->- [>>>]++++++ +++++<<+
+    [<<<]>>>>
 ]
-
-# Adjust positions
 <-
-<+++++ +++++>>>[-<<<->>>]<<<
+<++++++ +++++>>>[-<<<->>>]<<<
 
-# Convert to character for output (itoa logic)
-<+++++ +
+# Convert integer to ASCII (itoa)
+<+++++++
 [
- >+++++ +++>
- [+++++ +++>]
- <[<]>-
+    >++++++ ++++>
+    [++++++ ++++>]
+    <[<]>-
 ]
 
-# Print the result with newline
+# Print with newline
 >>[.<<]<[<<]>>.
+>>,.
 
